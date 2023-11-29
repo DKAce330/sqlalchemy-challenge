@@ -84,19 +84,16 @@ def stations():
 @app.route("/api/v1.0/tobs")
 def tobs():
     session = Session(engine)
-
-    # Query data
-    tobs_data = session.query(Measurement.tobs).filter(Measurement.station == 'USC00519281').filter(Measurement.date >= query_date).all()
-
+    # Query data, convert, return as json
+    tobs_data = session.query(Measurement.tobs).all()  # Fetch all results
     session.close()
 
-    # Create a dictionary and append row data to be returned as a json
     tobs_list = []
-    for date, tobs in tobs_data:
-        tobs_dict = {}
-        tobs_dict["date"] = date
-        tobs_dict["tobs"] = tobs
+    for row in tobs_data:
+        tobs_value = row[0]  # Extract the first column value (tobs)
+        tobs_dict = {"tobs": tobs_value}  # Create a dictionary with the tob value
         tobs_list.append(tobs_dict)
+
     return jsonify(tobs_list)
 
 
